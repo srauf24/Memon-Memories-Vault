@@ -61,7 +61,7 @@ const MemonMemoryVault = () => {
             flexDirection="column"
             gap={3}
           >
-            <Typography variant="h5"> Enter memory </Typography>
+            <Typography variant="h5"> Memory Likidah Yaar 😉️ 📝</Typography>
             <TextField> </TextField>
           </Box>
         </Fade>
