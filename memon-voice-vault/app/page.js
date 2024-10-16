@@ -30,9 +30,14 @@ const MemonMemoryVault = () => {
       justifyContent="center"
       alignItems="center"
       gap={2}
-    >g
+    >
       <h3> Memon Memories Vault</h3>
-      <Button variant="outlined">
+      <Button
+        variant="contained"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
         <Typography variant="button">Add a new memory</Typography>{" "}
       </Button>
       <Modal
@@ -55,10 +60,14 @@ const MemonMemoryVault = () => {
             display="flex"
             flexDirection="column"
             gap={3}
-          ></Box>
+          >
+            <Typography variant="h5"> Enter memory </Typography>
+            <TextField> </TextField>
+          </Box>
         </Fade>
       </Modal>
     </Box>
   );
 };
+// eslint-disable-next-line no-undef
 export default dynamic(() => Promise.resolve(MemonMemoryVault), { ssr: false });
