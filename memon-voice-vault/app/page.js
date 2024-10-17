@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import styles from "./page.module.css";
+import SendIcon from "@mui/icons-material/Send";
+import AddIcon from "@mui/icons-material/Add";
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -12,12 +14,23 @@ import {
   Button,
   Card,
   CardContent,
+  IconButton,
 } from "@mui/material";
 import dynamic from "next/dynamic";
 import ThumbUp from "@mui/icons-material/ThumbUp";
 import { Remove } from "@mui/icons-material";
+import {
+  doc,
+  collection,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore"; // Correct imports for Firestore
 const MemonMemoryVault = () => {
   const [open, setOpen] = useState(false); // Initially, modal is closed
+  const [textEntry, setTextEntry] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -31,14 +44,10 @@ const MemonMemoryVault = () => {
       alignItems="center"
       gap={2}
     >
-      <h3> Memon Memories Vault</h3>
-      <Button
-        variant="contained"
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        <Typography variant="button">Add a new memory</Typography>{" "}
+      <h1>Memon Yaadash Mukha 🔑🔒 </h1>
+
+      <Button variant="contained" onClick={handleOpen}>
+        <Typography variant="button">Nayi yaadas darj kar ➕</Typography>{" "}
       </Button>
       <Modal
         open={open}
@@ -63,6 +72,9 @@ const MemonMemoryVault = () => {
           >
             <Typography variant="h5"> Memory Likidah Yaar 😉️ 📝</Typography>
             <TextField> </TextField>
+            <Button type="submit" variant="contained" endIcon={<SendIcon />}>
+              Bhejo
+            </Button>
           </Box>
         </Fade>
       </Modal>
