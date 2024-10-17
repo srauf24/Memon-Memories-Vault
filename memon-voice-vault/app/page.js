@@ -70,8 +70,17 @@ const MemonMemoryVault = () => {
             flexDirection="column"
             gap={3}
           >
-            <Typography variant="h5"> Memory Likidah Yaar 😉️ 📝</Typography>
-            <TextField> </TextField>
+            <Typography variant="h5"> Yaadash Likidah Yaar ✏️</Typography>
+            <TextField
+              value={textEntry}
+              onChange={(e) => {
+                setTextEntry(e.target.value); // Update the state with the input
+                console.log(e.target.value); // Log the current value being typed
+              }}
+              label="Aek dafa .."
+              variant="outlined"
+              fullWidth
+            />
             <Button type="submit" variant="contained" endIcon={<SendIcon />}>
               Bhejo
             </Button>
