@@ -44,10 +44,10 @@ const MemonMemoryVault = () => {
       alignItems="center"
       gap={2}
     >
-      <h1>Memon Yaadash Mukha 🔑🔒 </h1>
+      <h1>Memon Yaadash/Bat Mukha 🔑🔒 </h1>
 
       <Button variant="contained" onClick={handleOpen}>
-        <Typography variant="button">Nayi yaadas darj kar ➕</Typography>{" "}
+        <Typography variant="button">Nayi Yaadash/Bat darj kar ➕</Typography>{" "}
       </Button>
       <Modal
         open={open}
