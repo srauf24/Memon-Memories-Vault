@@ -52,11 +52,11 @@ const MemonMemoryVault = () => {
       alignItems="center"
       gap={2}
     >
-      <h1>Memon Yaadash Mukha 🔑🔒</h1>
+      <h1>Memon Yaadash Vault 🔑🔒</h1>
 
       {/* Button to open the modal */}
       <Button variant="contained" onClick={handleOpen}>
-        <Typography variant="button">Nayi yaadas darj kar ➕</Typography>
+        <Typography variant="button">Add Memory/Quote ➕</Typography>
       </Button>
 
       {/* Modal for entering a new quote */}
