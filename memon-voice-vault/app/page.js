@@ -14,34 +14,70 @@ import {
   CardContent,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-import { collection, getDocs } from "firebase/firestore";
 import { fireStore } from "@/app/firebase"; // Correct imports for Firestore
+import {
+  doc,
+  collection,
+  getDocs,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore"; // Correct imports for Firestore
 
 const MemonMemoryVault = () => {
   const [open, setOpen] = useState(false); // Initially, modal is closed
-  const [textEntry, setTextEntry] = useState("");
+  const [textEntry, setTextEntry] = useState(""); // To track the new quote input
+  const [quotes, setQuotes] = useState([]); // To store the list of quotes
+
+  // Function to open and close the modal
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const [quotes, setQuotes] = useState([]);
 
-  // Fetch quotes from Firestore
+  // Fetch quotes from Firestore on component mount
   useEffect(() => {
     const updateQuotes = async () => {
-      const snapshot = await getDocs(collection(fireStore, "vault")); // Get the snapshot
+      const snapshot = await getDocs(collection(fireStore, "vault"));
       const quotesList = [];
 
       // Loop through each document in the snapshot
-      snapshot.docs.forEach((doc) => {
+      snapshot.forEach((doc) => {
         quotesList.push({
-          id: doc.id,
-          memory: doc.data().memory, // Assuming the 'memory' field exists in each document
+          id: doc.id, // Use the document ID as the memory or quote
         });
       });
-      setQuotes(quotesList); // Update state with the list of quotes/memories
+      setQuotes(quotesList); // Update the state with the list of quotes
     };
 
-    updateQuotes(); // Call the function on component mount
-  }, []); // Empty dependency array to run this effect only once
+    updateQuotes(); // Fetch quotes when the component mounts
+  }, []);
+
+  // Function to add or update a quote in Firestore
+  const addQuote = async (quote) => {
+    const docRef = doc(fireStore, "vault", quote); // Reference to the document in 'vault' collection
+    const docSnap = await getDoc(docRef); // Fetch the document from Firestore
+    console.log('adding quote: ', quote)
+    if (!docSnap.exists()) {
+      // If the quote doesn't exist, create it with 0 likes
+      await setDoc(docRef, {
+        likes: 0, // Set initial likes to 0
+        timestamp: serverTimestamp(), // Set the timestamp when created
+      });
+    }
+
+    // Refresh the quotes after adding the new one
+    const snapshot = await getDocs(collection(fireStore, 'vault'));
+    const quotesList = [];
+
+    snapshot.forEach((doc) => {
+      quotesList.push({
+        id: doc.id, // Use the document ID as the quote content
+      });
+    });
+
+    setQuotes(quotesList); // Update the state with the refreshed list of quotes
+    setTextEntry(""); // Clear the input field
+  };
+
   return (
     <Box
       width="100vw"
@@ -72,7 +108,7 @@ const MemonMemoryVault = () => {
             top="50%"
             left="50%"
             transform="translate(-50%,-50%)"
-            width={{ xs: "90%", sm: "400px" }} // Responsive width
+            width={{ xs: "90%", sm: "400px" }}
             bgcolor="white"
             border={"2px solid #000"}
             boxShadow={24}
@@ -89,7 +125,15 @@ const MemonMemoryVault = () => {
               variant="outlined"
               fullWidth
             />
-            <Button type="submit" variant="contained" endIcon={<SendIcon />}>
+            <Button
+              type="submit"
+              variant="contained"
+              endIcon={<SendIcon />}
+              onClick={() => {
+                addQuote(textEntry); // Call addQuote to add the new quote
+                handleClose(); // Close the modal
+              }}
+            >
               Bhejo
             </Button>
           </Box>
@@ -116,5 +160,5 @@ const MemonMemoryVault = () => {
   );
 };
 
-// eslint-disable-next-line no-undef
+// Disable SSR for this page
 export default dynamic(() => Promise.resolve(MemonMemoryVault), { ssr: false });
