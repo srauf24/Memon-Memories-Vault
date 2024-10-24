@@ -1,6 +1,4 @@
 "use client";
-import Image from "next/image";
-import styles from "./page.module.css";
 import SendIcon from "@mui/icons-material/Send";
 import AddIcon from "@mui/icons-material/Add";
 import { useState, useEffect } from "react";
@@ -14,26 +12,36 @@ import {
   Button,
   Card,
   CardContent,
-  IconButton,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-import ThumbUp from "@mui/icons-material/ThumbUp";
-import { Remove } from "@mui/icons-material";
-import {
-  doc,
-  collection,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  getDoc,
-  serverTimestamp,
-} from "firebase/firestore"; // Correct imports for Firestore
+import { collection, getDocs } from "firebase/firestore";
+import { fireStore } from "@/app/firebase"; // Correct imports for Firestore
+
 const MemonMemoryVault = () => {
   const [open, setOpen] = useState(false); // Initially, modal is closed
   const [textEntry, setTextEntry] = useState("");
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [quotes, setQuotes] = useState([]);
 
+  // Fetch quotes from Firestore
+  useEffect(() => {
+    const updateQuotes = async () => {
+      const snapshot = await getDocs(collection(fireStore, "vault")); // Get the snapshot
+      const quotesList = [];
+
+      // Loop through each document in the snapshot
+      snapshot.docs.forEach((doc) => {
+        quotesList.push({
+          id: doc.id,
+          memory: doc.data().memory, // Assuming the 'memory' field exists in each document
+        });
+      });
+      setQuotes(quotesList); // Update state with the list of quotes/memories
+    };
+
+    updateQuotes(); // Call the function on component mount
+  }, []); // Empty dependency array to run this effect only once
   return (
     <Box
       width="100vw"
@@ -44,11 +52,14 @@ const MemonMemoryVault = () => {
       alignItems="center"
       gap={2}
     >
-      <h1>Memon Yaadash/Bat Mukha 🔑🔒 </h1>
+      <h1>Memon Yaadash Mukha 🔑🔒</h1>
 
+      {/* Button to open the modal */}
       <Button variant="contained" onClick={handleOpen}>
-        <Typography variant="button">Nayi Yaadash/Bat darj kar ➕</Typography>{" "}
+        <Typography variant="button">Nayi yaadas darj kar ➕</Typography>
       </Button>
+
+      {/* Modal for entering a new quote */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -70,13 +81,10 @@ const MemonMemoryVault = () => {
             flexDirection="column"
             gap={3}
           >
-            <Typography variant="h5"> Yaadash Likidah Yaar ✏️</Typography>
+            <Typography variant="h5">Yaadash Likidah Yaar ✏️</Typography>
             <TextField
               value={textEntry}
-              onChange={(e) => {
-                setTextEntry(e.target.value); // Update the state with the input
-                console.log(e.target.value); // Log the current value being typed
-              }}
+              onChange={(e) => setTextEntry(e.target.value)} // Update the state with the input
               label="Aek dafa .."
               variant="outlined"
               fullWidth
@@ -87,8 +95,26 @@ const MemonMemoryVault = () => {
           </Box>
         </Fade>
       </Modal>
+
+      {/* Display quotes */}
+      <Stack width="100%" spacing={2} mt={2}>
+        {quotes.length > 0 ? (
+          quotes.map(({ id }) => (
+            <Card key={id} sx={{ minWidth: 275, margin: 2 }}>
+              <CardContent>
+                <Typography variant="h5" component="div">
+                  {id ? `"${id}"` : "No memory available"}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography>No memories available</Typography>
+        )}
+      </Stack>
     </Box>
   );
 };
+
 // eslint-disable-next-line no-undef
 export default dynamic(() => Promise.resolve(MemonMemoryVault), { ssr: false });
